@@ -5,7 +5,7 @@ extern "C" {
 #include "network_80211.h"
 
 void handle_pkt(uint8_t *buf, uint16 len) {
-  char ssid_buff[32];
+  char ssid_buf[32];
   lpframectrl_80211 framectrl;
   if (len < 64) return;
   
@@ -29,11 +29,11 @@ void handle_pkt(uint8_t *buf, uint16 len) {
       ptagged_parameter tag = (ptagged_parameter)(buf + sizeof(probe_request));
 
       if (tag->tag_length != 0) {
-        os_memset(ssid_buff, 0, 32);
-        os_memcpy(ssid_buff, (uint8_t *)tag + 2, tag->tag_length);
+        os_memset(ssid_buf, 0, 32);
+        os_memcpy(ssid_buf, (uint8_t *)tag + 2, tag->tag_length);
 
         Serial.print("Probe request from " + addr + " ");
-        Serial.println("for " +  String(ssid_buff));
+        Serial.println("for " +  String(ssid_buf));
       }
     } 
   }
