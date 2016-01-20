@@ -5,15 +5,10 @@ extern "C" {
 #include "network_80211.h"
 
 void handle_pkt(uint8_t *buf, uint16 len) {
-  // Serial.println("packet, len " + String(len));
-  uint8_t type;
-
+  char ssid_buff[32];
   lpframectrl_80211 framectrl;
-  struct router_info *info = NULL;
-  if (len < 64) {
-    return;
-  }
-  struct sniffer_buf *sniffer = (struct sniffer_buf*)buf;
+  if (len < 64) return;
+  
   buf += sizeof(struct RxControl);
   struct probe_request_80211 *probe_buf = (struct probe_request_80211*)buf;
 
@@ -32,9 +27,7 @@ void handle_pkt(uint8_t *buf, uint16 len) {
    
       /* Probe Request */
       ptagged_parameter tag = (ptagged_parameter)(buf + sizeof(probe_request));
-      if (tag->tag_length != 0)
-      {
-        char ssid_buff[32];
+      if (tag->tag_length != 0) {
         os_memset(ssid_buff, 0, 32);
         os_memcpy(ssid_buff, (uint8_t *)tag + 2, tag->tag_length);
         Serial.print("Probe request from " + addr + " ");
