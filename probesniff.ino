@@ -10,7 +10,7 @@ void handle_pkt(uint8_t *buf, uint16 len) {
   if (len < 64) return;
   
   buf += sizeof(struct RxControl);
-  struct probe_request_80211 *probe_buf = (struct probe_request_80211*)buf;
+  struct probe_request_80211 *probe_buf = (struct probe_request_80211*) buf;
 
 
   if (FRAME_TYPE_MANAGEMENT == probe_buf->framectrl.Type) {
@@ -27,9 +27,11 @@ void handle_pkt(uint8_t *buf, uint16 len) {
    
       /* Probe Request */
       ptagged_parameter tag = (ptagged_parameter)(buf + sizeof(probe_request));
+
       if (tag->tag_length != 0) {
         os_memset(ssid_buff, 0, 32);
         os_memcpy(ssid_buff, (uint8_t *)tag + 2, tag->tag_length);
+
         Serial.print("Probe request from " + addr + " ");
         Serial.println("for " +  String(ssid_buff));
       }
