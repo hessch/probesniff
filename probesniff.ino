@@ -32,7 +32,8 @@ void handle_pkt(uint8_t *buf, uint16 len) {
         os_memcpy(ssid_buf, (uint8_t *)tag + 2, tag->tag_length);
 
         char logbuf[80];
-        snprintf(logbuf, sizeof(logbuf), "Probe request from %s for %s", srcaddr, ssid_buf);
+        snprintf(logbuf, sizeof(logbuf), "Probe request from %s for %s (%d octets remain)", 
+          srcaddr, ssid_buf, sizeof(buf) - sizeof(tag));
         Serial.println(logbuf);
       }
     }
