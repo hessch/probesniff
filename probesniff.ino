@@ -4,6 +4,9 @@ extern "C" {
 }
 #include "network_80211.h"
 
+// expand int[6] to argument list (for snprintf)
+#define args6(a) a[0], a[1], a[2], a[3], a[4], a[5]
+
 void handle_pkt(uint8_t *buf, uint16 len) {
   char ssid_buf[32];
   lpframectrl_80211 framectrl;
@@ -19,10 +22,7 @@ void handle_pkt(uint8_t *buf, uint16 len) {
       uint8* tsaddr = probe_buf->tsaddr;
 
       char srcaddr[18];
-      snprintf(srcaddr, sizeof(srcaddr),
-               "%02x:%02x:%02x:%02x:%02x:%02x",
-               tsaddr[0], tsaddr[1], tsaddr[2], 
-               tsaddr[3], tsaddr[4], tsaddr[5]);
+      snprintf(srcaddr, sizeof(srcaddr), "%02x:%02x:%02x:%02x:%02x:%02x", args6(tsaddr));
 
       /* Probe Request */
       ptagged_parameter tag = (ptagged_parameter)(buf + sizeof(probe_request));
