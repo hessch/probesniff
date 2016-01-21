@@ -8,23 +8,22 @@ void handle_pkt(uint8_t *buf, uint16 len) {
   char ssid_buf[32];
   lpframectrl_80211 framectrl;
   if (len < 64) return;
-  
+
   buf += sizeof(struct RxControl);
   struct probe_request_80211 *probe_buf = (struct probe_request_80211*) buf;
 
-
   if (FRAME_TYPE_MANAGEMENT == probe_buf->framectrl.Type) {
-   
+
     /* Management frame */
     if (FRAME_SUBTYPE_PROBE_REQUEST == probe_buf->framectrl.Subtype) {
       uint8* tsaddr = probe_buf->tsaddr;
-      String addr = String(tsaddr[0], HEX) + ":" +
-                    String(tsaddr[1], HEX) + ":" +
-                    String(tsaddr[2], HEX) + ":" +
-                    String(tsaddr[3], HEX) + ":" +
-                    String(tsaddr[4], HEX) + ":" +
-                    String(tsaddr[5], HEX) ; 
-   
+
+      char srcaddr[18];
+      snprintf(srcaddr, sizeof(srcaddr),
+               "%02x:%02x:%02x:%02x:%02x:%02x",
+               tsaddr[0], tsaddr[1], tsaddr[2], 
+               tsaddr[3], tsaddr[4], tsaddr[5]);
+
       /* Probe Request */
       ptagged_parameter tag = (ptagged_parameter)(buf + sizeof(probe_request));
 
@@ -32,10 +31,11 @@ void handle_pkt(uint8_t *buf, uint16 len) {
         os_memset(ssid_buf, 0, 32);
         os_memcpy(ssid_buf, (uint8_t *)tag + 2, tag->tag_length);
 
-        Serial.print("Probe request from " + addr + " ");
-        Serial.println("for " +  String(ssid_buf));
+        char logbuf[80];
+        snprintf(logbuf, sizeof(logbuf), "Probe request from %s for %s", srcaddr, ssid_buf);
+        Serial.println(logbuf);
       }
-    } 
+    }
   }
 }
 
